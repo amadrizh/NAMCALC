@@ -1,0 +1,88 @@
+
+{% block content %}
+    <h1>Results for {{ method_name.capitalize() }} Method</h1>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+
+
+
+    {% if method_name == 'newton' %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Iteration</th>
+                    <th>x_n</th>
+                    <th>f(x_n)</th>
+                    <th>f'(x_n)</th>
+                    <th>x_n+1</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in results %}
+                    <tr>
+                        <td>{{ row[0] }}</td>
+                        <td>{{ row[1] }}</td>
+                        <td>{{ row[2] }}</td>
+                        <td>{{ row[3] }}</td>
+                        <td>{{ row[4] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <img src="data:image/png;base64,{{ plot_url }}" alt="Method Plot">
+
+    {% elif method_name == 'bisection' %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Iteration</th>
+                    <th>a</th>
+                    <th>b</th>
+                    <th>c</th>
+                    <th>f(c)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in results %}
+                    <tr>
+                        <td>{{ row[0] }}</td>
+                        <td>{{ row[1] }}</td>
+                        <td>{{ row[2] }}</td>
+                        <td>{{ row[3] }}</td>
+                        <td>{{ row[4] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <img src="data:image/png;base64,{{ plot_url }}" alt="Method Plot">
+
+    {% elif method_name == 'secant' %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Iteration</th>
+                    <th>x_n-1</th>
+                    <th>x_n</th>
+                    <th>f(x_n-1)</th>
+                    <th>f(x_n)</th>
+                    <th>x_n+1</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in results %}
+                    <tr>
+                        <td>{{ row[0] }}</td>
+                        <td>{{ row[1] }}</td>
+                        <td>{{ row[2] }}</td>
+                        <td>{{ row[3] }}</td>
+                        <td>{{ row[4] }}</td>
+                        <td>{{ row[5] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <img src="data:image/png;base64,{{ plot_url }}" alt="Method Plot">
+    {% endif %}
+
+
+{% endblock %}

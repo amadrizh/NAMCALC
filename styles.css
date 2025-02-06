@@ -1,0 +1,22 @@
+table {
+    width: 100%;
+    border-collapse: collapse; /* Ensures the borders are collapsed together */
+}
+
+th, td {
+    padding: 8px; /* Adds padding for a better visual appearance */
+    text-align: center;
+    border: 1px solid #ddd; /* Adds a light grey border */
+}
+
+th {
+    background-color: #f2f2f2; /* Light background color for header */
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9; /* Alternating row colors */
+}
+
+tr:hover {
+    background-color: #f1f1f1; /* Slight highlight on hover */
+}
