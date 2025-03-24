@@ -4,16 +4,23 @@ import matplotlib.pyplot as plt
 import io
 import base64
 from sympy import symbols, sympify, diff, lambdify
+import re
+
 
 app = Flask(__name__)
 
 x = symbols('x')
+plot_url = None  # Reset before defining a new one
+
+
 
 
 def preprocess_function(func_str):
     func_str = func_str.replace('^', '**')
     func_str = func_str.replace("e", "exp(1)")
+    func_str = re.sub(r'(\d)([a-zA-Z])', r'\1*\2', func_str)
     return func_str
+
 
 
 def newton_method(func_str, x0, iterations, decimal_places):
@@ -112,24 +119,24 @@ def secant_method(func_str, x0, x1, iterations, decimal_places):
 
 
 def plot_newton(x_vals, f_np):
-    # Ensure method_name is used for method-specific plots
+# Step 3: Plot the graph
     x_range = np.linspace(min(x_vals) - 1, max(x_vals) + 1, 500)
     y_range = f_np(x_range)
 
     plt.figure(figsize=(10, 6))
     plt.plot(x_range, y_range, label="f(x)", color="blue")
-
-    for i in range(1, len(x_vals)):
-        xi = x_vals[i - 1]
-        f_xi = f_np(xi)
-        f_prime_xi = lambdify(x, diff(sympify(request.form['function']), x), "numpy")(xi)  # f'(xi)
-
-        tangent_y = f_prime_xi * (x_range - xi) + f_xi
-        plt.plot(x_range, tangent_y, linestyle="--", color="green", alpha=0.6)
-        plt.scatter([xi], [f_xi], color="red")
-
     plt.axhline(0, color="black", linewidth=0.8)
-    plt.axvline(x_vals[-1], color="purple", linestyle=":", linewidth=1.5, label="Approximate Root")
+    plt.axvline(0, color="black", linewidth=0.8)
+
+# Plot iterations
+    for i, xi in enumerate(x_vals[:-1]):
+        plt.scatter(xi, f_np(xi), color="red")
+        plt.plot([xi, xi], [0, f_np(xi)], color="red", linestyle="--")
+        plt.plot([xi, x_vals[i + 1]], [f_np(xi), 0], color="green", linestyle="--")
+
+    plt.title("Newton's Method Iterations")
+    plt.xlabel("x")
+    plt.ylabel("f(x)")
     plt.legend()
     plt.grid()
 
@@ -138,7 +145,6 @@ def plot_newton(x_vals, f_np):
     img.seek(0)
     plot_url = base64.b64encode(img.getvalue()).decode()
     return plot_url
-
 
 def plot_secant(x_vals, f_np):
     x_range = np.linspace(min(x_vals) - 1, max(x_vals) + 1, 500)
@@ -176,26 +182,44 @@ def plot_secant(x_vals, f_np):
 
 
 def plot_bisection(x_vals, f_np):
-    x_range = np.linspace(min([pair[0] for pair in x_vals]) - 1, max([pair[1] for pair in x_vals]) + 1, 500)
+    # Extracting min and max from the initial intervals
+    a_min = min([pair[0] for pair in x_vals])
+    b_max = max([pair[1] for pair in x_vals])
+
+    x_range = np.linspace(a_min - 1, b_max + 1, 500)
     y_range = f_np(x_range)
 
     plt.figure(figsize=(10, 6))
     plt.plot(x_range, y_range, label="f(x)", color="blue")
 
-    for a, b in x_vals:
-        plt.plot([a, b], [f_np(a), f_np(b)], linestyle="--", color="green", alpha=0.6)
-        plt.scatter([a, b], [f_np(a), f_np(b)], color="red")
+    # Plot vertical lines at each midpoint (c values)
+    for i, (a, b) in enumerate(x_vals):
+        c = (a + b) / 2  # Midpoint
+        plt.axvline(c, color="green", linestyle="--", alpha=0.5)
 
-    plt.axhline(0, color="black", linewidth=0.8)
-    plt.axvline((x_vals[-1][0] + x_vals[-1][1]) / 2, color="purple", linestyle=":", linewidth=1.5, label="Approximate Root")
+    # Mark initial endpoints a and b
+    plt.scatter([x_vals[0][0], x_vals[0][1]], [f_np(x_vals[0][0]), f_np(x_vals[0][1])], color="red", label="Initial Endpoints")
+
+    # Highlight root approximation (final midpoint)
+    root_approx = (x_vals[-1][0] + x_vals[-1][1]) / 2
+    plt.axvline(root_approx, color="purple", linestyle=":", linewidth=1.5, label="Approximate Root")
+
+    plt.axhline(0, color="black", linewidth=0.8)  # x-axis
+    plt.xlabel("x")
+    plt.ylabel("f(x)")
+    plt.title("Bisection Method Iterations")
     plt.legend()
     plt.grid()
 
+    # Convert plot to base64 for rendering in HTML
     img = io.BytesIO()
-    plt.savefig(img, format='png')
+    plt.savefig(img, format="png")
     img.seek(0)
     plot_url = base64.b64encode(img.getvalue()).decode()
+    plt.close()
+
     return plot_url
+
 
 
 @app.route('/newton', methods=['GET', 'POST'])
