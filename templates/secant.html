@@ -1,26 +1,35 @@
-<!-- secant.html -->
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
     <title>Secant Method</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='method_styles.css') }}">
 </head>
-
 <body>
-    <h1>Secant Method</h1>
-    <form action="/secant" method="post">
-        <label>Function f(x): </label>
-        <input type="text" name="function" required><br>
-        <label>First Initial Guess x0: </label>
-        <input type="number" step="any" name="x0" required><br>
-        <label>Second Initial Guess x1: </label>
-        <input type="number" step="any" name="x1" required><br>
-        <label>Iterations: </label>
-        <input type="number" name="iterations" required><br>
-        <label>Decimal Places: </label>
-        <input type="number" name="decimal_places" required><br>
-        <input type="submit" class="submit-btn" value="Calculate">
-    </form>
+    <div class="container">
+        <h1>Secant Method</h1>
+        <form action="/secant" method="post">
+            <div class="form-group">
+                <label>Function f(x):</label>
+                <input type="text" name="function" required>
+            </div>
+            <div class="form-group">
+                <label>First Initial Guess x0:</label>
+                <input type="number" step="any" name="x0" required>
+            </div>
+            <div class="form-group">
+                <label>Second Initial Guess x1:</label>
+                <input type="number" step="any" name="x1" required>
+            </div>
+            <div class="form-group">
+                <label>Iterations:</label>
+                <input type="number" name="iterations" required>
+            </div>
+            <div class="form-group">
+                <label>Decimal Places:</label>
+                <input type="number" name="decimal_places" required>
+            </div>
+            <input type="submit" class="submit-btn" value="Calculate">
+        </form>
+    </div>
 </body>
-
 </html>
